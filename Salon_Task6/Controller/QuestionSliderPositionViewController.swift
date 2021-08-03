@@ -9,12 +9,6 @@ import UIKit
 
 class QuestionSliderPositionViewController: UIViewController {
 
-
-    private var answerValue:Int = 95{
-        didSet{
-            answerValueLabel.text = String(answerValue)
-        }
-    }
     private let randomNumModel = RandomNumModel()
 
     @IBOutlet weak var answerValueLabel: UILabel!
@@ -29,11 +23,10 @@ class QuestionSliderPositionViewController: UIViewController {
 
     @IBAction func judge(_ sender: Any) {
 
-        slider.value.round()
-        if Int(slider.value) == answerValue {
-            Alert(judge: "あたり！")
+        if Int(slider.value) == randomNumModel.answerValue {
+            presentAlert(judge: "あたり！")
         } else {
-            Alert(judge: "はずれ！")
+            presentAlert(judge: "はずれ！")
         }
     }
     
@@ -44,17 +37,16 @@ class QuestionSliderPositionViewController: UIViewController {
             forName: .didChangeRandomNumModelthemeNum,
             object: nil,
             queue: OperationQueue.main,
-            using: { [weak self] notification in
-                if let themeNum = notification.object as? Int {
-                    self?.answerValue = themeNum
-                }
+            using: { [weak self] _ in
+                guard let strongSelf = self else { return }
+                strongSelf.answerValueLabel.text = String(strongSelf.randomNumModel.answerValue)
             }
         )
 
-        randomNumModel.gemerateAnswerValue()
+        randomNumModel.generateAnswerValue()
     }
 
-    func Alert(judge:String) {
+    func presentAlert(judge: String) {
 
         let alert = UIAlertController(
             title: "結果",
@@ -63,15 +55,12 @@ class QuestionSliderPositionViewController: UIViewController {
 
         let nextChallenge = UIAlertAction(
             title: "再挑戦",
-            style: .default) {
-            (action) in
-            self.slider.value = 50
-            self.randomNumModel.gemerateAnswerValue()
-            self.dismiss(animated: true, completion: nil)
+            style: .default) { [weak self] _ in
+            self?.slider.value = 50
+            self?.randomNumModel.generateAnswerValue()
         }
 
         alert.addAction(nextChallenge)
         present(alert, animated: true, completion: nil)
     }
 }
-
