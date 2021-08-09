@@ -17,16 +17,16 @@ extension Notification.Name {
 class RandomNumModel {
     
     let notificationCenter = NotificationCenter()
-    private var answerValue:Int = 50 {
+    private(set) var answerValue: Int = 50 {
         didSet{
             notificationCenter.post(
                 name: .didChangeRandomNumModelthemeNum,
-                object: answerValue
+                object: nil
             )
         }
     }
     
-    func gemerateAnswerValue(){
-        answerValue = Int(arc4random_uniform(101))
+    func generateAnswerValue(){
+        answerValue = Int.random(in: 1...100)
     }
 }
